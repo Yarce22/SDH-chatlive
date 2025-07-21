@@ -1,0 +1,13 @@
+{
+  "name": "sdh-chatlive",
+  "version": "1.0.0",
+  "description": "chat en tiempo real",
+  "license": "ISC",
+  "author": "Alejandro Mira aljomira96@gmail.com",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js --watch"
+  }
+}
