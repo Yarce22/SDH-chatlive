@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import io from 'socket.io-client';
 
 // Connect to the Socket.IO server
-const socket = io('http://localhost:3000'); // Replace with your backend URL
+const socket = io(import.meta.env.VITE_SERVER); // Replace with your backend URL
 
 function App() {
   const [message, setMessage] = useState('');
-  const [receivedMessages, setReceivedMessages] = useState([]);
-  const [usersConnected, setUsersConnected] = useState([]);
+  const [receivedMessages, setReceivedMessages] = useState<string[]>([]);
+  const [usersConnected, setUsersConnected] = useState<string[]>([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Listen for 'receive_message' event from the server
@@ -15,25 +18,28 @@ function App() {
       setReceivedMessages((prevMessages) => [...prevMessages, data.message]);
     });
 
-    socket.on("users_connected", (userIds) => {
-      setUsersConnected(userIds);
+    socket.on("users_connected", (data) => {
+      setUsersConnected(data);
     })
+
+    if (document.cookie.length === 0) {
+      navigate("/register")
+    }
 
     // Clean up the socket connection on component unmount
     return () => {
       socket.off('receive_message');
+      socket.off("users_connected");
     };
-  }, []); // Run once on component mount
+  }, [navigate, usersConnected]); // Run once on component mount
 
-  const sendMessage = () => {
+  const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (message.trim()) {
       socket.emit('send_message', { message }); // Emit 'send_message' event to the server
       setMessage(''); // Clear the input field
     }
   };
-
-  console.log(usersConnected);
-  
 
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
@@ -46,7 +52,7 @@ function App() {
           ))}
         </ul>
       </div>
-      <div style={{ marginBottom: '15px' }}>
+      <form onSubmit={sendMessage} style={{ marginBottom: '15px' }}>
         <input
           type="text"
           value={message}
@@ -54,10 +60,10 @@ function App() {
           placeholder="Type your message..."
           style={{ padding: '8px', marginRight: '10px', width: '300px' }}
         />
-        <button onClick={sendMessage} style={{ padding: '8px 15px', cursor: 'pointer' }}>
+        <button type="submit" style={{ padding: '8px 15px', cursor: 'pointer' }}>
           Send Message
         </button>
-      </div>
+      </form>
       <h2>Messages:</h2>
       <div style={{ border: '1px solid #ccc', padding: '10px', minHeight: '150px', overflowY: 'auto' }}>
         {receivedMessages.length === 0 ? (

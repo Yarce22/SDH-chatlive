@@ -12,22 +12,19 @@ export default function realtimeServer(server) {
   
   io.on('connection', (socket) => {
     console.log("user connected " + socket.id);
-
-    usersConnected.add(socket.id);
-    io.emit("users_connected", Array.from(usersConnected));
+    socket.on("user_register", (data) => {
+      console.log(data)
+      usersConnected.add(data.name);
+      io.emit("users_connected", Array.from(usersConnected));
+    })
     
-    console.log(usersConnected);
-    
-
     socket.on('send_message', (data) => {
+      console.log(data)
       io.emit('receive_message', data);
     });
 
     socket.on("disconnect", () => {
       console.log("user disconnected " + socket.id);
-      usersConnected.delete(socket.id);
-      io.emit("users_connected", Array.from(usersConnected));
-      console.log(usersConnected);
     })
   });
 } 
