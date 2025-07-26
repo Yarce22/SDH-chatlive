@@ -8,8 +8,8 @@ const app = express();
 const server = createServer(app);
 
 app.use(express.json());
-app.use("/api", routes);
 app.use(cors());
+app.use("/api", routes);
 
 const PORT = process.env.PORT || 3000;
 

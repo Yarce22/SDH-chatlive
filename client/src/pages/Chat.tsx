@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import io from 'socket.io-client';
+import getUsers from '../services';
 
 // Connect to the Socket.IO server
 const socket = io(import.meta.env.VITE_SERVER); // Replace with your backend URL
 
-function App() {
+function Chat() {
   const [message, setMessage] = useState('');
   const [receivedMessages, setReceivedMessages] = useState<string[]>([]);
   const [usersConnected, setUsersConnected] = useState<string[]>([]);
@@ -13,14 +14,19 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      const users = await getUsers()
+      console.log(users)
+      setUsersConnected(users)
+    }
+    fetchUsers()
+  }, [])
+
+  useEffect(() => {
     // Listen for 'receive_message' event from the server
     socket.on('receive_message', (data) => {
       setReceivedMessages((prevMessages) => [...prevMessages, data.message]);
     });
-
-    socket.on("users_connected", (data) => {
-      setUsersConnected(data);
-    })
 
     if (document.cookie.length === 0) {
       navigate("/register")
@@ -82,4 +88,4 @@ function App() {
   );
 }
 
-export default App;
+export default Chat;
