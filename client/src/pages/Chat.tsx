@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import io from 'socket.io-client';
-import getUsers from '../services';
+import {getUsers, deleteUser} from '../services';
+import deleteCookie from "../utils/deleteUserCookie"
 
 // Connect to the Socket.IO server
 const socket = io(import.meta.env.VITE_SERVER); // Replace with your backend URL
@@ -9,24 +10,28 @@ const socket = io(import.meta.env.VITE_SERVER); // Replace with your backend URL
 function Chat() {
   const [message, setMessage] = useState('');
   const [receivedMessages, setReceivedMessages] = useState<string[]>([]);
-  const [usersConnected, setUsersConnected] = useState<string[]>([]);
+  const [usersConnected, setUsersConnected] = useState<string[]>([""]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const users = await getUsers()
-      console.log(users)
-      setUsersConnected(users)
+      const { usersConnected } = await getUsers()
+      
+      setUsersConnected(usersConnected.filter((user: string) => user !== document.cookie.split("=")[1]))
     }
     fetchUsers()
-  }, [])
+  }, [usersConnected])
 
   useEffect(() => {
     // Listen for 'receive_message' event from the server
     socket.on('receive_message', (data) => {
       setReceivedMessages((prevMessages) => [...prevMessages, data.message]);
     });
+
+    socket.on("users_connected", (data) => {
+      setUsersConnected((prevUsers) => [...prevUsers, data.name])
+    })
 
     if (document.cookie.length === 0) {
       navigate("/register")
@@ -47,15 +52,26 @@ function Chat() {
     }
   };
 
+  const handleLogout = async () => {
+    socket.emit("disconnect_user")
+
+    await deleteUser(document.cookie.split("=")[1])
+    
+    deleteCookie("username")
+    navigate("/register")
+  }
+
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h1>Real-time Chat with Socket.IO, React, and Vite</h1>
       <div>
         <h2>Users connected:</h2>
         <ul>
-          {usersConnected.map((id, index) => (
-            <li key={index}>{id}</li>
-          ))}
+          {usersConnected.map((user, index) => {
+            return (
+              <li key={index}>{user}</li>
+            )
+          })}
         </ul>
       </div>
       <form onSubmit={sendMessage} style={{ marginBottom: '15px' }}>
@@ -84,6 +100,7 @@ function Chat() {
           </ul>
         )}
       </div>
+      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 }

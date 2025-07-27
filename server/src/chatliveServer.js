@@ -25,6 +25,7 @@ export default function realtimeServer(server) {
 
     socket.on("disconnect", () => {
       console.log("user disconnected " + socket.id);
+      
     })
   });
 } 

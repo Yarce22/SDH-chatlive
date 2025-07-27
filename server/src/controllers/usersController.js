@@ -20,7 +20,7 @@ export const getUsersController = async (req, res) => {
   }
 }
 
-export const postUsersController = async (req, res) => {
+export const postUserController = async (req, res) => {
   try {
     const newUser = req.body;
 
@@ -40,6 +40,28 @@ export const postUsersController = async (req, res) => {
   } catch (error) {
     console.log("Error agregando un usuario", error)
     res.status(500).json({error: "Error agregando un usuario"})
+  }
+}
+
+export const deleteUserController = async (req, res) => {
+  try {
+    const userName = req.params.name
+
+    const users = JSON.parse(fs.readFileSync(usersPath, "utf-8"));
+
+    users.usersConnected = users.usersConnected.filter((user) => user !== userName)
+
+    fs.writeFile(usersPath, JSON.stringify(users), (err) => {
+      if (err) {
+        console.log("Error eliminando un usuario", err)
+        res.status(500).json({error: "Error eliminando un usuario"})
+      }
+    })
+    
+    res.status(200).json({message: "Usuario eliminado exitosamente"})
+  } catch (error) {
+    console.log("Error eliminando un usuario", error)
+    res.status(500).json({error: "Error eliminando un usuario"})
   }
 }
     
