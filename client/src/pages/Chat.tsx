@@ -4,13 +4,14 @@ import io from 'socket.io-client';
 import {getUsers, deleteUser} from '../services';
 import deleteCookie from "../utils/deleteUserCookie"
 
-// Connect to the Socket.IO server
-const socket = io(import.meta.env.VITE_SERVER); // Replace with your backend URL
+const socket = io(import.meta.env.VITE_SERVER);
 
 function Chat() {
-  const [message, setMessage] = useState('');
-  const [receivedMessages, setReceivedMessages] = useState<string[]>([]);
   const [usersConnected, setUsersConnected] = useState<string[]>([""]);
+  const [receiverUser, setReceiverUser] = useState<string>("");
+  const [message, setMessage] = useState('');
+  const [receivedMessages, setReceivedMessages] = useState<{ senderId: string; message: string; room: string }[]>([]);
+  const [privateRoom, setPrivateRoom] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -24,31 +25,30 @@ function Chat() {
   }, [usersConnected])
 
   useEffect(() => {
-    // Listen for 'receive_message' event from the server
-    socket.on('receive_message', (data) => {
-      setReceivedMessages((prevMessages) => [...prevMessages, data.message]);
-    });
-
     socket.on("users_connected", (data) => {
       setUsersConnected((prevUsers) => [...prevUsers, data.name])
     })
+
+    socket.on('receive_private_message', ({ senderId, message, room }) => {
+      setReceivedMessages((prevMessages) => [...prevMessages, {senderId, message, room}]);
+      setPrivateRoom(room);
+    });
 
     if (document.cookie.length === 0) {
       navigate("/register")
     }
 
-    // Clean up the socket connection on component unmount
     return () => {
-      socket.off('receive_message');
+      socket.off('receive_private_message');
       socket.off("users_connected");
     };
-  }, [navigate, usersConnected]); // Run once on component mount
+  }, [navigate, usersConnected]);
 
   const sendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (message.trim()) {
-      socket.emit('send_message', { message }); // Emit 'send_message' event to the server
-      setMessage(''); // Clear the input field
+      socket.emit('send_private_message', { senderId: document.cookie.split("=")[1], message: message.trim() });
+      setMessage(''); 
     }
   };
 
@@ -61,19 +61,25 @@ function Chat() {
     navigate("/register")
   }
 
+  const startPrivateChat = (senderId: string, receiverId: string) => {
+    socket.emit("start_private_chat", { senderId, receiverId });
+    setReceiverUser(receiverId)
+  } 
+
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h1>Real-time Chat with Socket.IO, React, and Vite</h1>
-      <div>
+      <section>
         <h2>Users connected:</h2>
-        <ul>
-          {usersConnected.map((user, index) => {
+        <div>
+          {usersConnected.length ? usersConnected.map((user, index) => {
             return (
-              <li key={index}>{user}</li>
+              <button key={index} onClick={() => startPrivateChat(document.cookie.split("=")[1], user)}>{user}</button>
             )
-          })}
-        </ul>
-      </div>
+          }) : <p>No users connected</p>}
+        </div>
+      </section>
+
       <form onSubmit={sendMessage} style={{ marginBottom: '15px' }}>
         <input
           type="text"
@@ -86,20 +92,23 @@ function Chat() {
           Send Message
         </button>
       </form>
-      <h2>Messages:</h2>
-      <div style={{ border: '1px solid #ccc', padding: '10px', minHeight: '150px', overflowY: 'auto' }}>
-        {receivedMessages.length === 0 ? (
-          <p>No messages yet.</p>
+
+      <section style={{ border: '1px solid #ccc', padding: '10px', minHeight: '150px', overflowY: 'auto' }}>
+        {receivedMessages.length > 0 ? (
+          <>
+            <h2>Chat with {receiverUser}</h2>
+            {receivedMessages.map((message, index) => {
+              return (
+                <div key={index}>
+                  <p>{message.message}</p>
+                </div>
+              )
+            })}
+          </>
         ) : (
-          <ul>
-            {receivedMessages.map((msg, index) => (
-              <li key={index} style={{ marginBottom: '5px' }}>
-                {msg}
-              </li>
-            ))}
-          </ul>
+          <p>No private chat selected</p>
         )}
-      </div>
+      </section>
       <button onClick={handleLogout}>Logout</button>
     </div>
   );

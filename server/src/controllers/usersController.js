@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import userEstructure from "../utils/userEstructure.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,6 +30,7 @@ export const postUserController = async (req, res) => {
     if (users.usersConnected.includes(newUser.name)) return res.status(400).json({error: "Nombre de usuario ya esta en uso"})
 
     users.usersConnected.push(newUser.name);
+    users[newUser.privateRoom] = userEstructure(newUser.name)
     
     fs.writeFile(usersPath, JSON.stringify(users), (err) => {
       if (err) {

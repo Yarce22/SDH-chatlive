@@ -19,17 +19,20 @@ export default function Register() {
     const sendUserRegister = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         
-        if (name !== "") {
+        if (name.trim() !== "") {
             document.cookie = "username=" + name;
 
-            socket.emit("user_register", { name })
+            socket.emit("user_register", { name: name.trim() })
             
             const fetchUsers = async () => {
-                await postUser({ name })
+                try {
+                    await postUser({ name: name.trim(), privateRoom })
+                    navigate("/")
+                } catch (error) {
+                    return console.log("Error agregando un usuario", error)
+                }
             }
             fetchUsers()
-
-            navigate("/")
         } else {
             alert("Por favor, introduce un nombre de usuario")
         }
@@ -48,7 +51,7 @@ export default function Register() {
                     name="name"
                     id="name"
                     value={name}
-                    onChange={(e) => setName(e.target.value.trim())}
+                    onChange={(e) => setName(e.target.value)}
                 />
 
                 <button type="submit">Register</button>
