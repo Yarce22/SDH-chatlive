@@ -1,7 +1,13 @@
 import { Server } from "socket.io";
 import privateRoomChat from "./utils/privateRoomChat.js";
+import { fileURLToPath } from "url";
+import path, { dirname } from "path";
+import fs from "fs";
 
-const usersConnected = new Set();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const usersPath = path.join(__dirname, "../services/users.json");
 
 export default function realtimeServer(server) {
   const io = new Server(server, {
@@ -16,32 +22,27 @@ export default function realtimeServer(server) {
 
     socket.on("user_register", (data) => {
       console.log(data)
-      usersConnected.add(data.name);
-      io.emit("users_connected", Array.from(usersConnected));
-    })
-
-    socket.on("start_private_chat", ({ senderId, receiverId }) => {
-      console.log({ senderId, receiverId })
-      const roomName = privateRoomChat(senderId, receiverId)
-      console.log(roomName);
-      
-      socket.join(roomName);
-      socket.privateRoom = roomName;
+      io.emit("user_connected", { username: data.name })
     })
     
-    socket.on('send_private_message', ({ message }) => {
-      
-      const room = socket.privateRoom;
+    socket.on('send_message', ({ myUsername, receiverUser, message }) => {
+      console.log({ myUsername, receiverUser, message })
 
-      console.log({ message, room })
+      const room = privateRoomChat(myUsername, receiverUser)
+      socket.privateRoom = room
 
-      io.to(room).emit('receive_private_message', { message, room });
+      socket.join(room)
+
+      io.to(room).emit('receive_message', { myUsername, receiverUser, message, room });
     });
 
-    socket.on("disconnect_user", () => {
-      console.log("user disconnected " + socket.id);
-      usersConnected.delete(socket.id);
-      io.emit("users_connected", Array.from(usersConnected));
+    socket.on("disconnect_user", async (username) => {
+      try {
+
+        io.emit("user_disconnected", { username });
+      } catch (error) {
+        console.log("Error eliminando un usuario", error)
+      }
     })
 
     socket.on("disconnect", () => {

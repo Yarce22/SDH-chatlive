@@ -12,6 +12,8 @@ const usersPath = path.join(__dirname, "../services/users.json");
 export const getUsersController = async (req, res) => {
   try {
     fs.readFile(usersPath, "utf-8", (err, data) => {
+      if (err) console.log("Error obteniendo los usuarios conectados", err)
+
       const users = JSON.parse(data)
       res.json(users)
     })
@@ -30,9 +32,9 @@ export const postUserController = async (req, res) => {
     if (users.usersConnected.includes(newUser.name)) return res.status(400).json({error: "Nombre de usuario ya esta en uso"})
 
     users.usersConnected.push(newUser.name);
-    users[newUser.privateRoom] = userEstructure(newUser.name)
+    users[newUser.name] = userEstructure(newUser.name)
     
-    fs.writeFile(usersPath, JSON.stringify(users), (err) => {
+    fs.writeFile(usersPath, JSON.stringify(users, null, 2), (err) => {
       if (err) {
         console.log("Error agregando un usuario", err)
         res.status(500).json({error: "Error agregando un usuario"})
@@ -53,7 +55,7 @@ export const deleteUserController = async (req, res) => {
 
     users.usersConnected = users.usersConnected.filter((user) => user !== userName)
 
-    fs.writeFile(usersPath, JSON.stringify(users), (err) => {
+    fs.writeFile(usersPath, JSON.stringify(users, null, 2), (err) => {
       if (err) {
         console.log("Error eliminando un usuario", err)
         res.status(500).json({error: "Error eliminando un usuario"})

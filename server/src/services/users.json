@@ -1,1 +1,18 @@
-{"usersConnected":[]}
+{
+  "usersConnected": [],
+  "Raul": {
+    "username": "Raul",
+    "chats": [],
+    "groups": []
+  },
+  "Yuli": {
+    "username": "Yuli",
+    "chats": [],
+    "groups": []
+  },
+  "Yarce": {
+    "username": "Yarce",
+    "chats": [],
+    "groups": []
+  }
+}
