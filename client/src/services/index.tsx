@@ -47,4 +47,20 @@ const deleteUser = async (user: string) => {
   }
 }
 
-export { getUsers, postUser, deleteUser }
+const getMessages = async (room: string) => {
+  try {
+    const data = await fetch(`${import.meta.env.VITE_SERVER}/api/messages/${room}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const messages = await data.json();
+    return messages;
+  } catch (error) {
+    console.log("Error obteniendo los mensajes", error);
+    return { error: "Error obteniendo los mensajes" };
+  }
+}
+
+export { getUsers, postUser, deleteUser, getMessages }

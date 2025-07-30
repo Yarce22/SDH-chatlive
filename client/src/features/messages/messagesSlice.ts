@@ -1,15 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
+interface Message {
+  message: string;
+  timestamp: string;
+  sender: string;
+}
+
 interface MessagesState {
   message: string;
-  messages: string[];
+  messages: Message[];
   room: string;
 }
 
  const initialState: MessagesState = {
   message: "",
-  messages: [],
+  messages: [] as Message[],
   room: "",
  }
 
@@ -20,8 +26,11 @@ interface MessagesState {
     setMessage: (state, action: PayloadAction<string>) => {
       state.message = action.payload;
     },
-    setMessages: (state, action: PayloadAction<string[]>) => {
+    setMessages: (state, action: PayloadAction<Message[]>) => {
       state.messages = action.payload;
+    },
+    addMessage: (state, action: PayloadAction<Message>) => {
+      state.messages.push(action.payload);
     },
     setRoom: (state, action: PayloadAction<string>) => {
       state.room = action.payload;
@@ -29,5 +38,5 @@ interface MessagesState {
   }
  })
 
-export const { setMessage, setMessages, setRoom } = messagesSlice.actions;
+export const { setMessage, setMessages, addMessage, setRoom } = messagesSlice.actions;
 export default messagesSlice.reducer;

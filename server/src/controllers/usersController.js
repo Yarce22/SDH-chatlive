@@ -32,7 +32,6 @@ export const postUserController = async (req, res) => {
     if (users.usersConnected.includes(newUser.name)) return res.status(400).json({error: "Nombre de usuario ya esta en uso"})
 
     users.usersConnected.push(newUser.name);
-    users[newUser.name] = userEstructure(newUser.name)
     
     fs.writeFile(usersPath, JSON.stringify(users, null, 2), (err) => {
       if (err) {

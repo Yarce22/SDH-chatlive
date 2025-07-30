@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { setMessage, setMessages, setRoom } from "../features/messages/messagesSlice"
+import { setMessage, setMessages } from "../features/messages/messagesSlice"
 
 import type { Socket } from "socket.io-client"
 import type { RootState } from "../app/store"
@@ -18,21 +18,23 @@ export const MessagesBox: React.FC<MessagesProps> = ({ socket }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    socket.on("receive_message", ({ message, room }) => {
-      dispatch(setMessages([...messages, message]))
-      dispatch(setRoom(room))
+    socket.on("receive_message", (data) => {
+      console.log("data de receive_message", data)
+      dispatch(setMessages(data))
     })
-  }, [])
+
+    return () => {
+      socket.off("receive_message")
+    }
+  }, [dispatch, socket])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    socket.emit("send_message", { myUsername, receiverUser, message })
+    socket.emit("send_message", { myUsername, receiverUser, message, timestamp: new Date().toISOString(), room })
 
     dispatch(setMessage(""))
   }
-
-  console.log(messages);
 
   return (
     <section>
@@ -40,7 +42,7 @@ export const MessagesBox: React.FC<MessagesProps> = ({ socket }) => {
         <>
           <h2>Chat with {receiverUser}</h2>
           <ul>
-            {messages.map((message: string, index: number) => (
+            {messages.map(({ message }, index: number) => (
               <li key={index}>{message}</li>
             ))}
           </ul>
