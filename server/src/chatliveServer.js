@@ -4,7 +4,7 @@ import { subscribeToRoomMessages, sendMessage } from './services/messagesService
 export default function realtimeServer(server) {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: "https://sdh-chatlive-dp1o.vercel.app/",
       methods: ["GET", "POST"]
     }
   });
