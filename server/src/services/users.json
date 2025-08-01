@@ -1,10 +1,6 @@
 {
-  "usersConnected": [
-    "Yarce",
-    "Yuli",
-    "Raul"
-  ],
-  "private-Yarce-Yuli": {
+  "asdfasdfaewfsdfaw": {
+    "roomId": "private-Yarce-Yuli",
     "messages": [
       {
         "message": "Hola",
@@ -19,82 +15,27 @@
       {
         "message": "Bien y usted?",
         "timestamp": "2025-07-30T22:06:02.630Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Bien bien",
-        "timestamp": "2025-07-30T22:11:59.081Z",
         "sender": "Yuli"
-      },
+      }
+    ]
+  },
+  "asdfasfgasdf": {
+    "roomId": "group-Los Papus",
+    "messages": [
       {
         "message": "Hola",
-        "timestamp": "2025-07-30T22:34:48.727Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Hola",
-        "timestamp": "2025-07-30T23:28:58.050Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Como estas?",
-        "timestamp": "2025-07-30T23:29:01.740Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Si buenas",
-        "timestamp": "2025-07-30T23:36:32.818Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Hola",
-        "timestamp": "2025-07-30T23:36:44.262Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Este es un mensaje",
-        "timestamp": "2025-07-30T23:37:11.537Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Este es un mensaje de prueba",
-        "timestamp": "2025-07-30T23:38:52.816Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "NO se esta actualizando en tiempo real",
-        "timestamp": "2025-07-30T23:39:40.397Z",
+        "timestamp": "2025-07-30T22:00:42.575Z",
         "sender": "Yuli"
       },
       {
-        "message": "Otro mensaje",
-        "timestamp": "2025-07-30T23:41:39.567Z",
+        "message": "Como están",
+        "timestamp": "2025-07-30T22:00:59.399Z",
         "sender": "Yarce"
       },
       {
-        "message": "Muestrame la data",
-        "timestamp": "2025-07-30T23:42:19.638Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Muestra en consola la data",
-        "timestamp": "2025-07-30T23:44:13.259Z",
-        "sender": "Yuli"
-      },
-      {
-        "message": "prueba",
-        "timestamp": "2025-07-30T23:44:59.881Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Ahora si deberia de servr",
-        "timestamp": "2025-07-30T23:53:11.782Z",
-        "sender": "Yarce"
-      },
-      {
-        "message": "Siiiii funciona",
-        "timestamp": "2025-07-30T23:53:17.858Z",
-        "sender": "Yuli"
+        "message": "Bien y ustedes?",
+        "timestamp": "2025-07-30T22:06:02.630Z",
+        "sender": "Raul"
       }
     ]
   }

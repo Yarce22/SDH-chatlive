@@ -17,24 +17,37 @@ export const MessagesBox: React.FC<MessagesProps> = ({ socket }) => {
   const { room } = useSelector((state: RootState) => state.messages)
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    socket.on("receive_message", (data) => {
-      console.log("data de receive_message", data)
-      dispatch(setMessages(data))
-    })
+useEffect(() => {
+  socket.on('room_messages', (messages) => {
+    dispatch(setMessages(messages));
+  });
 
-    return () => {
-      socket.off("receive_message")
-    }
-  }, [dispatch, socket])
+  return () => {
+    socket.off('room_messages');
+  };
+}, [socket, dispatch]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  
+  if (!message.trim()) return;
 
-    socket.emit("send_message", { myUsername, receiverUser, message, timestamp: new Date().toISOString(), room })
+  const messageData = {
+    myUsername,
+    receiverUser,
+    message,
+    timestamp: new Date().toISOString(),
+    room
+  };
 
-    dispatch(setMessage(""))
+  try {
+    socket.emit("send_message", messageData);
+    
+    dispatch(setMessage(""));
+  } catch (error) {
+    console.error('Error al enviar mensaje:', error);
   }
+};
 
   return (
     <section>

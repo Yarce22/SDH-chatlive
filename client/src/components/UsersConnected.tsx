@@ -1,12 +1,11 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { getMessages, getUsers } from "../services"
-import { setUsersConnected, setReceiverUser } from "../features/users/userSlice"
+import { setReceiverUser, setUsersConnected } from "../features/users/userSlice"
 import createRoom from "../utils/createRoom"
 
 import type { RootState } from "../app/store"
 import type { Socket } from "socket.io-client"
-import { setMessages, setRoom } from "../features/messages/messagesSlice"
+import { setRoom } from "../features/messages/messagesSlice"
 
 interface UsersConnectedProps {
   socket: Socket
@@ -15,63 +14,45 @@ interface UsersConnectedProps {
 export const UsersConnected: React.FC<UsersConnectedProps> = ({ socket }) => {
   const myUsername = useSelector((state: RootState) => state.user.myUsername);
   const usersConnected = useSelector((state: RootState) => state.user.usersConnected);
-  const room = useSelector((state: RootState) => state.messages.room);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchGetUsers = async () => {
-      try {
-        const { usersConnected } = await getUsers();
-        const usersFiltered = usersConnected.filter((user: string) => user !== myUsername);
-        dispatch(setUsersConnected(usersFiltered))
-      } catch (error) {
-        console.log("Error cargando los usuarios conectados", error)
-      }
+    socket.emit("request_users");
+
+    const handleUsersUpdate = (users: string[]) => {
+      dispatch(setUsersConnected(users.filter((user: string) => user !== myUsername)))
     }
 
-    fetchGetUsers()
-
-    socket.on("user_connected", fetchGetUsers)
-    socket.on("user_disconnected", fetchGetUsers)
+    socket.on("user_connected", handleUsersUpdate);
+    socket.on("user_disconnected", handleUsersUpdate);
+    socket.on("users_list", handleUsersUpdate);
 
     return () => {
-      socket.off("user_connected", fetchGetUsers)
-      socket.off("user_disconnected", fetchGetUsers)
+      socket.off("user_connected")
+      socket.off("user_disconnected")
+      socket.off("users_list")
     }
-  }, [dispatch, myUsername, socket])
+  }, [dispatch, socket, myUsername])
 
   const handleChat = (user: string) => {
     const roomChat = createRoom(myUsername, user)
-
-    const fetchGetMessages = async () => {
-      try {
-        const { messages } = await getMessages(roomChat);
-        if (!messages) {
-          dispatch(setMessages([]))
-        } else {
-          dispatch(setMessages(messages))
-        }
-      } catch (error) {
-        console.log("Error cargando los mensajes", error)
-      }
-    }
-
-    fetchGetMessages()
 
     dispatch(setRoom(roomChat))
     dispatch(setReceiverUser(user))
 
     socket.emit("join_room", roomChat)
   }
-  
-  console.log("room", room);
+
   return (
     <section>
       <h2>Users connected:</h2>
       <div>
-        {usersConnected.map((user: string) => (
-          <button key={user} onClick={() => handleChat(user)}>{user}</button>
-        ))}
+        {usersConnected.length < 1
+          ? <p>No users connected</p>
+          : usersConnected.map((user: string) => (
+            <button key={user} onClick={() => handleChat(user)}>{user}</button>
+          ))
+        }
       </div>
     </section>
   )

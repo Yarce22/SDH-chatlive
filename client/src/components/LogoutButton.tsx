@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux"
-import { deleteUser } from "../services"
 import { setUser } from "../features/users/userSlice"
 import deleteCookie from "../utils/deleteUserCookie"
 
@@ -17,15 +16,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ socket, navigate }) 
   const dispatch = useDispatch()
 
   const handleLogout = () => {
-    const fetchDeleteUser = async () => {
-      try {
-        await deleteUser(username)
-        socket.emit("disconnect_user", username)
-      } catch (error) {
-        return console.log("Error eliminando el usuario", error)
-      }
-    }
-    fetchDeleteUser()
+    socket.emit("user_disconnected", username)
 
     dispatch(setUser(""))
     deleteCookie("username")
