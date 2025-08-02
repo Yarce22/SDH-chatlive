@@ -1,12 +1,15 @@
 import { useNavigate } from 'react-router';
 import { RegisterForm } from '../components/RegisterForm';
+import { useEffect } from 'react';
 
 export default function Register() {
     const navigate = useNavigate()
 
-    if (document.cookie.length > 0) {
-        navigate("/")
-    }
+    useEffect(() => {
+        if (document.cookie.length > 0) {
+            navigate("/")
+        }
+    }, [navigate])
 
     return (
         <section>

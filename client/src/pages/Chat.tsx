@@ -3,15 +3,19 @@ import { useNavigate } from 'react-router';
 import { UsersConnected } from '../components/UsersConnected';
 import { MessagesBox } from '../components/MessagesBox';
 import { LogoutButton } from '../components/LogoutButton';
+import { useEffect } from 'react';
 
 const socket = io(import.meta.env.VITE_SERVER);
 
 const Chat = () => {
   const navigate = useNavigate()
 
-  if (document.cookie.length === 0) {
-    navigate("/register")
-  }
+  useEffect(() => {
+    if (document.cookie.length === 0) {
+      navigate("/register")
+    }
+  }, [navigate])
+
 
   return (
     <section>
