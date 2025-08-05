@@ -5,6 +5,7 @@ import { store } from './app/store.ts'
 import { Provider } from 'react-redux'
 import Chat from './pages/Chat.tsx'
 import Register from './pages/Register.tsx'
+import './index.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

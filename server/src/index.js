@@ -3,6 +3,9 @@ import { createServer } from 'http';
 import cors from 'cors';
 import routes from './routes/index.js';
 import realtimeServer from './chatliveServer.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const server = createServer(app);

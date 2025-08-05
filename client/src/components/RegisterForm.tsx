@@ -24,7 +24,7 @@ export const RegisterForm = ({ navigate }: { navigate: NavigateFunction }) => {
     return () => {
       socket.off("user_exists")
     }
-  }, [navigate, socket])
+  }, [navigate])
 
   const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -47,17 +47,23 @@ export const RegisterForm = ({ navigate }: { navigate: NavigateFunction }) => {
 
   return (
     <>
-      <form onSubmit={handleRegister}>
-          <label htmlFor="name">Name</label>
+      <form onSubmit={handleRegister} className='flex flex-col gap-2'>
+          <label htmlFor="name" className='text-colorText font-semibold text-2xl'>Name:</label>
           <input
               type="text"
               name="name"
               id="name"
               value={myUsername}
               onChange={(e) => dispatch(setUser(e.target.value))}
+              className='border-2 border-colorText rounded-md p-2 text-colorText font-semibold text-xl focus:outline-none focus:border-colorText'
           />
 
-          <button type="submit">Register</button>
+          <button
+            type="submit"
+            className='mt-5 bg-colorText text-bgPrimary rounded-md p-2 font-bold cursor-pointer hover:scale-105 transition-all active:bg-transparent active:text-colorText active:border-colorText active:border-2 text-2xl'
+          >
+            Register
+          </button>
       </form>
     </>
   )

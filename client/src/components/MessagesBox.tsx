@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { setMessage, setMessages } from "../features/messages/messagesSlice"
+import { BackArrow } from "./BackArrow"
 
 import type { Socket } from "socket.io-client"
 import type { RootState } from "../app/store"
@@ -15,6 +16,7 @@ export const MessagesBox: React.FC<MessagesProps> = ({ socket }) => {
   const { message } = useSelector((state: RootState) => state.messages)
   const { messages } = useSelector((state: RootState) => state.messages)
   const { room } = useSelector((state: RootState) => state.messages)
+  const chatOpen = useSelector((state: RootState) => state.menu.chatOpen)
   const dispatch = useDispatch()
 
 useEffect(() => {
@@ -50,10 +52,13 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 };
 
   return (
-    <section>
+    <section className={`${chatOpen ? "block" : "hidden"}`}>
+      <div className="flex items-center gap-2">
+        <BackArrow />
+        <h2 className="font-bold text-2xl pb-1">Chat with {receiverUser}</h2>
+      </div>
       {receiverUser ? (
         <>
-          <h2>Chat with {receiverUser}</h2>
           <ul>
             {messages.map(({ message }, index: number) => (
               <li key={index}>{message}</li>

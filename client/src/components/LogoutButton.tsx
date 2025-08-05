@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import { setUser } from "../features/users/userSlice"
 import deleteCookie from "../utils/deleteUserCookie"
+import logoutIcon from "../assets/logoutIcon.png"
 
 import type { NavigateFunction } from "react-router"
 import type { RootState } from "../app/store"
@@ -24,6 +25,11 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ socket, navigate }) 
   }
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <button
+      onClick={handleLogout}
+      className="w-5 h-5  "
+    >
+      <img src={logoutIcon} alt="logout-icon" />
+    </button>
   )
 }
