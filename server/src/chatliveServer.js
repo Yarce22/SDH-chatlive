@@ -19,6 +19,7 @@ export default function realtimeServer(server) {
 
     socket.on("register_user", ({ name }) => {
       console.log(name)
+      console.log(connectedUsers)
 
       const isUniqueUser = connectedUsers.has(name)
 

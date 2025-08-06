@@ -4,4 +4,7 @@
   --color-bgPrimary: #111827;
   --color-colorText: #FFF;
   --color-colorTextSecondary: #ffe082;
+
+  --color-messageSender: #3b82f6;
+  --color-messageReceiver: #efb914;
 }
